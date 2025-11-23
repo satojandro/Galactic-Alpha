@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Orbitron } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from "sonner"
 import { Web3Providers } from "@/components/web3-providers"
 import "./globals.css"
 
@@ -44,6 +45,12 @@ export default function RootLayout({
         <Web3Providers>
           {children}
           <Analytics />
+          <Toaster
+            theme="dark"
+            position="top-center"
+            richColors
+            closeButton
+          />
         </Web3Providers>
       </body>
     </html>

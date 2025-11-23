@@ -1,8 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useAccount, useChainId } from "wagmi"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { toast } from "sonner"
+import { mintSubname, PARENT_DOMAIN } from "@/lib/ens-utils"
 
 const zodiacSigns = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"]
 
@@ -46,19 +49,26 @@ const mysticQuotes = [
 ]
 
 export function ZodiacMinter() {
+  const { address, isConnected } = useAccount()
+  const chainId = useChainId()
   const [isSpinning, setIsSpinning] = useState(false)
   const [revealed, setRevealed] = useState(false)
+  const [isMinting, setIsMinting] = useState(false)
   const [stellarName, setStellarName] = useState("")
+  const [subnameLabel, setSubnameLabel] = useState("") // Store just the label part
   const [mysticQuote, setMysticQuote] = useState("")
+  const [mintTxHash, setMintTxHash] = useState<string | null>(null)
 
   const handleReveal = () => {
     setIsSpinning(true)
     setRevealed(false)
+    setMintTxHash(null)
 
     // Generate random stellar name
     const prefix = celestialPrefixes[Math.floor(Math.random() * celestialPrefixes.length)]
     const suffix = celestialSuffixes[Math.floor(Math.random() * celestialSuffixes.length)]
-    const name = `${prefix}-${suffix}.eth`
+    const label = `${prefix}-${suffix}`
+    const fullName = `${label}.${PARENT_DOMAIN}`
 
     // Select random quote
     const quote = mysticQuotes[Math.floor(Math.random() * mysticQuotes.length)]
@@ -66,10 +76,78 @@ export function ZodiacMinter() {
     // Simulate spinning animation
     setTimeout(() => {
       setIsSpinning(false)
-      setStellarName(name)
+      setStellarName(fullName)
+      setSubnameLabel(label)
       setMysticQuote(quote)
       setRevealed(true)
     }, 3000)
+  }
+
+  const handleMint = async () => {
+    if (!isConnected || !address) {
+      toast.error("Please connect your wallet first", {
+        description: "You need to connect your wallet to mint your stellar identity.",
+      })
+      return
+    }
+
+    // Check if we're on a supported chain (Ethereum Mainnet or Sepolia)
+    if (chainId !== 1 && chainId !== 11155111) {
+      toast.error("Unsupported network", {
+        description: `Please switch to Ethereum Mainnet or Sepolia to mint ENS subnames. Current chain: ${chainId}`,
+      })
+      return
+    }
+
+    if (!subnameLabel) {
+      toast.error("No name to mint", {
+        description: "Please reveal a stellar name first.",
+      })
+      return
+    }
+
+    setIsMinting(true)
+
+    try {
+      toast.loading("Minting your stellar identity...", {
+        id: "minting",
+        description: "This may take a moment. Please confirm the transaction in your wallet.",
+      })
+
+      const txHash = await mintSubname({
+        subname: subnameLabel,
+        userAddress: address,
+        chainId,
+      })
+
+      setMintTxHash(txHash)
+
+      toast.success("✨ Stellar Identity Minted!", {
+        id: "minting",
+        description: `Your cosmic identity ${stellarName} has been minted successfully!`,
+        action: {
+          label: "View Transaction",
+          onClick: () => {
+            const explorerUrl =
+              chainId === 1
+                ? `https://etherscan.io/tx/${txHash}`
+                : `https://sepolia.etherscan.io/tx/${txHash}`
+            window.open(explorerUrl, "_blank")
+          },
+        },
+        duration: 10000,
+      })
+    } catch (error) {
+      console.error("Error minting subname:", error)
+      const errorMessage = error instanceof Error ? error.message : "Failed to mint subname"
+      toast.error("Minting Failed", {
+        id: "minting",
+        description: errorMessage,
+        duration: 8000,
+      })
+    } finally {
+      setIsMinting(false)
+    }
   }
 
   return (
@@ -209,17 +287,56 @@ export function ZodiacMinter() {
 
             <p className="text-lg md:text-xl text-foreground/80 italic max-w-xl mx-auto text-balance">{mysticQuote}</p>
 
+            {/* Mint Status */}
+            {mintTxHash && (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  ✓ Minted successfully! Your identity is now on-chain.
+                </p>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
               <Button
                 size="lg"
-                className="group relative px-8 py-6 text-base font-bold bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] hover:bg-[position:100%_0] transition-all duration-500 overflow-hidden"
+                onClick={handleMint}
+                disabled={isMinting || !isConnected}
+                className="group relative px-8 py-6 text-base font-bold bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] hover:bg-[position:100%_0] transition-all duration-500 overflow-hidden disabled:opacity-50"
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Mint Identity
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
+                  {isMinting ? (
+                    <>
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Minting...
+                    </>
+                  ) : (
+                    <>
+                      Mint Identity
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                      </svg>
+                    </>
+                  )}
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
               </Button>
@@ -227,12 +344,25 @@ export function ZodiacMinter() {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => setRevealed(false)}
+                onClick={() => {
+                  setRevealed(false)
+                  setMintTxHash(null)
+                }}
+                disabled={isMinting}
                 className="px-8 py-6 text-base border-primary/30 hover:bg-primary/10"
               >
                 Seek Another Name
               </Button>
             </div>
+
+            {/* Wallet Connection Warning */}
+            {!isConnected && (
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Connect your wallet to mint your stellar identity
+                </p>
+              </div>
+            )}
 
             {/* Constellation particles */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">

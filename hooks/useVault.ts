@@ -119,7 +119,7 @@ export function useVault(vaultAddress: `0x${string}`) {
     const amountWei = parseEther(amount)
 
     // Check if approval is needed
-    const currentAllowance = allowance ?? 0n
+    const currentAllowance = allowance ?? BigInt(0)
     if (currentAllowance < amountWei) {
       // First approve, then deposit (user will need to call deposit again after approval)
       await approveToken()
