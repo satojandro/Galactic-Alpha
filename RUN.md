@@ -19,39 +19,51 @@ Generate blockchain swap data from Uniswap V2:
 ```bash
 cd pipes
 
-# Run with default settings (or specify block range)
-npx tsx indexer.ts
-
-# Or with custom block range:
+# Option A: Use block numbers directly
 START_BLOCK=18000000 END_BLOCK=18030000 npx tsx indexer.ts
 
-# Or use npm script:
-npm run index
+# Option B: Convert dates to blocks first (recommended for date ranges)
+# First, find the block range for your date range:
+npx tsx blockToDate.ts --range 2024-01-01 2024-12-31
+# Then use the output block numbers:
+START_BLOCK=<start_block> END_BLOCK=<end_block> npx tsx indexer.ts
+
+# Example: Get all swaps from 2024
+npx tsx blockToDate.ts --range 2024-01-01 2024-12-31
+# Output will show: START_BLOCK=... END_BLOCK=... npx tsx indexer.ts
 ```
 
-**Output:** Creates `pipes/swap_data.json`
+**Output:** Creates `pipes/swap_data.json` (now includes `timestamp` and `date` fields)
 
 **Expected time:** Depends on block range (can take a few minutes for large ranges)
+
+**💡 Tip:** Use `blockToDate.ts` to convert calendar dates to block numbers!
 
 ---
 
 ### Step 2: Generate Astrological Data
 
-Calculate today's astrological conditions:
+Calculate astrological conditions:
 
 ```bash
 cd ../astro
 
-# Run the astro calculator
+# Option A: Generate for today only
 npx tsx today.ts
 
-# Or use npm script:
-npm run today
+# Option B: Generate for a date range (for backtesting)
+npx tsx dateRange.ts 2024-01-01 2024-12-31
+# Or with flags:
+npx tsx dateRange.ts --start 2024-01-01 --end 2024-12-31
 ```
 
-**Output:** Creates `astro/astro_today_index.json`
+**Output:** 
+- `astro/astro_today_index.json` (single date - today)
+- `astro/astro_date_range_index.json` (date range - array of dates)
 
-**Expected time:** < 1 second
+**Expected time:** 
+- Single date: < 1 second
+- Full year: ~10-30 seconds
 
 ---
 
@@ -144,6 +156,61 @@ npm run dev
 ```
 
 Save this as `run-all.sh`, make it executable (`chmod +x run-all.sh`), and run it with `./run-all.sh`
+
+---
+
+## 📅 Working with Date Ranges
+
+### Converting Dates to Block Numbers
+
+Use the `blockToDate.ts` utility to convert between dates and blocks:
+
+```bash
+cd pipes
+
+# Convert a single date to block number
+npx tsx blockToDate.ts --date 2024-01-01
+
+# Convert a date range to block range (for querying last year)
+npx tsx blockToDate.ts --range 2024-01-01 2024-12-31
+
+# Convert a block number to date
+npx tsx blockToDate.ts 18000000
+```
+
+### Getting Data for Last Year
+
+**Step 1:** Find block range for last year:
+```bash
+cd pipes
+npx tsx blockToDate.ts --range 2024-01-01 2024-12-31
+# Copy the START_BLOCK and END_BLOCK values
+```
+
+**Step 2:** Generate swap data:
+```bash
+START_BLOCK=<from_output> END_BLOCK=<from_output> npx tsx indexer.ts
+```
+
+**Step 3:** Generate astro data for the same date range:
+```bash
+cd ../astro
+npx tsx dateRange.ts 2024-01-01 2024-12-31
+```
+
+**Step 4:** Join the data (the joiner will match dates automatically):
+```bash
+cd ../backtester
+npx tsx joinAstro.ts
+```
+
+### Understanding Block Timestamps
+
+The indexer now includes `timestamp` and `date` fields in the output:
+- `timestamp`: Unix timestamp in seconds
+- `date`: ISO date string (YYYY-MM-DD)
+
+This makes it easy to match swap data with astrological data by date!
 
 ---
 

@@ -37,6 +37,8 @@ const USDC_DECIMALS = 6;   // token1 decimals
  */
 interface SwapData {
   block: number;
+  timestamp: number; // Unix timestamp in seconds
+  date: string; // ISO date string (YYYY-MM-DD)
   txHash: string;
   price: string;
   volume: string;
@@ -135,8 +137,13 @@ async function main() {
   const swapData: SwapData[] = [];
   
   // Parse block range from environment variables (optional)
-  const startBlock = process.env.START_BLOCK ? parseInt(process.env.START_BLOCK) : undefined;
-  const endBlock = process.env.END_BLOCK ? parseInt(process.env.END_BLOCK) : undefined;
+  // Strip commas from block numbers (e.g., "22,154,159" -> "22154159")
+  const startBlock = process.env.START_BLOCK 
+    ? parseInt(process.env.START_BLOCK.replace(/,/g, ''), 10) 
+    : undefined;
+  const endBlock = process.env.END_BLOCK 
+    ? parseInt(process.env.END_BLOCK.replace(/,/g, ''), 10) 
+    : undefined;
   
   console.log('🔍 Setting up Pipes query...');
   console.log(`   Pair: ${WETH_USDC_PAIR}`);
@@ -235,10 +242,26 @@ async function main() {
       ? Number(block.number)
       : 0;
     
+    // Extract timestamp from block (timestamp is in seconds)
+    const timestamp = typeof block?.timestamp === 'number'
+      ? block.timestamp
+      : typeof block?.timestamp === 'string'
+      ? parseInt(block.timestamp, 10)
+      : typeof block?.timestamp === 'bigint'
+      ? Number(block.timestamp)
+      : 0;
+    
+    // Convert timestamp to ISO date string (YYYY-MM-DD)
+    const date = timestamp > 0 
+      ? new Date(timestamp * 1000).toISOString().split('T')[0]
+      : '';
+    
     const txHash = tx?.hash || log.transactionHash || '';
     
     swapData.push({
       block: blockNumber,
+      timestamp: timestamp,
+      date: date,
       txHash: txHash,
       price: price.toFixed(2),
       volume: volume.toFixed(2),
