@@ -1,0 +1,302 @@
+[
+  {
+    "block": 18020000,
+    "txHash": "0x4921717b3f9782b18f55bc3dc7a70cce6f0e822d93dc9b6814b71b7c4d6b3021",
+    "price": "1796.76",
+    "volume": "65177.63",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Explosive Momentum ♃"
+    }
+  },
+  {
+    "block": 18020100,
+    "txHash": "0x90a070da3d04f29a3ac97f8a5884b00cf9b61e0703ae4f81f0cf8b46d7a2027e",
+    "price": "1864.74",
+    "volume": "24990.27",
+    "astro": {
+      "moon_phase": "Full Moon",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Grounded Insight 🌑"
+    }
+  },
+  {
+    "block": 18020200,
+    "txHash": "0x7b4efba3017268788eebf5d9b1f1067bdb67fd0dfc7c88dd34686b0aeaf90d82",
+    "price": "1811.88",
+    "volume": "14793.36",
+    "astro": {
+      "moon_phase": "New Moon",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Grounded Insight 🌑"
+    }
+  },
+  {
+    "block": 18020300,
+    "txHash": "0x77ecae285bba06329d87de96c8a35cd69c4e777779924c861fc768ff06ad8e91",
+    "price": "2045.93",
+    "volume": "66395.62",
+    "astro": {
+      "moon_phase": "New Moon",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Chaotic Neutral 🌕"
+    }
+  },
+  {
+    "block": 18020400,
+    "txHash": "0x166e419dfe948d8370d0fd8ecf6fa702bba7b89be178020d6c06b1cdd786f2aa",
+    "price": "2182.65",
+    "volume": "63742.44",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Disruptive Energies ☿"
+    }
+  },
+  {
+    "block": 18020500,
+    "txHash": "0x59f07a35f77a9b6a5485f7bb154bc3cc8fbb8ddef350b2e26d2e9d0288eeb50b",
+    "price": "1804.85",
+    "volume": "58688.89",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Grounded Insight 🌑"
+    }
+  },
+  {
+    "block": 18020600,
+    "txHash": "0x82c26b77488e1ce8cddda377c8c1c9b2db2150cf5ed44a43c625cf67eae3a56c",
+    "price": "1761.44",
+    "volume": "88010.66",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Explosive Momentum ♃"
+    }
+  },
+  {
+    "block": 18020700,
+    "txHash": "0x7e4b6a066bdc142b24a123867cf2c41055e3c684774d5ed5b49c52ed316e7933",
+    "price": "2191.24",
+    "volume": "46030.9",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Amplified Forces 🪐"
+    }
+  },
+  {
+    "block": 18020800,
+    "txHash": "0x428b2d72ff2c42db8a50210b2461ff29e03f7892d937c5dbb0b9c3905f21e14a",
+    "price": "2076.27",
+    "volume": "84156.04",
+    "astro": {
+      "moon_phase": "New Moon",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Grounded Insight 🌑"
+    }
+  },
+  {
+    "block": 18020900,
+    "txHash": "0xb22ef01f70ed4bb57f118a557a4edfb12f027d5a53ffad13980ed6472b1182b3",
+    "price": "1963.53",
+    "volume": "32708.03",
+    "astro": {
+      "moon_phase": "Full Moon",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Explosive Momentum ♃"
+    }
+  },
+  {
+    "block": 18021000,
+    "txHash": "0xbbedefe15d559e25c6407a1820fa77903df2f534fc5fa0ef848625299703e76f",
+    "price": "1737.41",
+    "volume": "22088.1",
+    "astro": {
+      "moon_phase": "Waxing Crescent",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Explosive Momentum ♃"
+    }
+  },
+  {
+    "block": 18021100,
+    "txHash": "0xb75bffb80aace731add5e8d291d00a449c0f311822333a024ae64edee543df44",
+    "price": "2045.88",
+    "volume": "75632.22",
+    "astro": {
+      "moon_phase": "Full Moon",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Disruptive Energies ☿"
+    }
+  },
+  {
+    "block": 18021200,
+    "txHash": "0xc1217c06b893ba474429ce3cfc87036112a6a6e6b24184d808ee72b761b12060",
+    "price": "2104.02",
+    "volume": "12801.41",
+    "astro": {
+      "moon_phase": "New Moon",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Chaotic Neutral 🌕"
+    }
+  },
+  {
+    "block": 18021300,
+    "txHash": "0xaa325ca34d4dd320bf6f3d6f0d46a3d77d3e066ebee463800379e7ba0e1720d6",
+    "price": "1780.12",
+    "volume": "26847.58",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Chaotic Neutral 🌕"
+    }
+  },
+  {
+    "block": 18021400,
+    "txHash": "0x2663210063b1a7bc7b2385de85ddb60261e96a2ae5dabad9d42439ee46c983e0",
+    "price": "1904.42",
+    "volume": "79340.51",
+    "astro": {
+      "moon_phase": "Waxing Crescent",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Amplified Forces 🪐"
+    }
+  },
+  {
+    "block": 18021500,
+    "txHash": "0x0f9923f1f26e0e2db9c0b1361930b96f5461062851bf441ab86e94b84d96d58f",
+    "price": "1955.27",
+    "volume": "81232.7",
+    "astro": {
+      "moon_phase": "New Moon",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Chaotic Neutral 🌕"
+    }
+  },
+  {
+    "block": 18021600,
+    "txHash": "0x8a5be075aea825605659d3843972ef0a44913ca2e998cb6bcdc042472aa8699a",
+    "price": "2156.52",
+    "volume": "75333.98",
+    "astro": {
+      "moon_phase": "Full Moon",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Amplified Forces 🪐"
+    }
+  },
+  {
+    "block": 18021700,
+    "txHash": "0x7baeaf029ad2fe4a0089300b2d2bad8c218959dc68f91ae256d9cc278ed93e6b",
+    "price": "1939.94",
+    "volume": "69496.43",
+    "astro": {
+      "moon_phase": "New Moon",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Chaotic Neutral 🌕"
+    }
+  },
+  {
+    "block": 18021800,
+    "txHash": "0x397fe583bbbc62022e506d350145cb2e362d8627b04208c6431e22091729d730",
+    "price": "2015.35",
+    "volume": "50833.0",
+    "astro": {
+      "moon_phase": "New Moon",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Disruptive Energies ☿"
+    }
+  },
+  {
+    "block": 18021900,
+    "txHash": "0xae68d1460828093c56a1518e825ab654293148669a3a7b9dcd1b8fe2a7837fbf",
+    "price": "2172.7",
+    "volume": "62519.94",
+    "astro": {
+      "moon_phase": "Full Moon",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Grounded Insight 🌑"
+    }
+  },
+  {
+    "block": 18022000,
+    "txHash": "0xb6b0c8f6be1a72b9c30ad71da617ae15b000df9c0c534d7b21a1d7c29c57bdf5",
+    "price": "2056.0",
+    "volume": "89435.14",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Disruptive Energies ☿"
+    }
+  },
+  {
+    "block": 18022100,
+    "txHash": "0x4cc1c2580a716c8769fc1df59bba870b5f6b5cbd036ea19d030a68eb5e060f6f",
+    "price": "2185.12",
+    "volume": "75191.28",
+    "astro": {
+      "moon_phase": "Waning Gibbous",
+      "mercury_retrograde": false,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Disruptive Energies ☿"
+    }
+  },
+  {
+    "block": 18022200,
+    "txHash": "0x353921068103d37c6bea0e46b8cd69d0bffac4a2be32804917e02e837f5951ed",
+    "price": "1764.66",
+    "volume": "31174.24",
+    "astro": {
+      "moon_phase": "Waxing Crescent",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Grounded Insight 🌑"
+    }
+  },
+  {
+    "block": 18022300,
+    "txHash": "0xb914b28c626b887a2f0deb5a9cc20ecd3763393d2d9855ec1fa13450cb3e82b5",
+    "price": "1709.52",
+    "volume": "36554.16",
+    "astro": {
+      "moon_phase": "Full Moon",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": false,
+      "astro_rating": "Chaotic Neutral 🌕"
+    }
+  },
+  {
+    "block": 18022400,
+    "txHash": "0x96f3dbcf3178e79fda219e470a36222dd9fe45c32a8d62bb2d8fe5e0589516c8",
+    "price": "1734.53",
+    "volume": "14265.19",
+    "astro": {
+      "moon_phase": "Waxing Crescent",
+      "mercury_retrograde": true,
+      "jupiter_mars_conjunction": true,
+      "astro_rating": "Explosive Momentum ♃"
+    }
+  }
+]
