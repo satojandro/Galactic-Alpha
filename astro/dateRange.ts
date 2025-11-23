@@ -8,12 +8,12 @@
  *   npx tsx dateRange.ts --start 2024-01-01 --end 2024-12-31
  */
 
+/// <reference path="./astronomia.d.ts" />
+
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import * as julian from 'astronomia/src/julian';
-import * as moonposition from 'astronomia/src/moonposition';
-import * as solar from 'astronomia/src/solar';
-import * as planetposition from 'astronomia/src/planetposition';
+// @ts-ignore - astronomia doesn't have type definitions
+import { julian, moonposition, solar, planetposition, data } from 'astronomia';
 
 // ... (include all the helper functions from today.ts)
 // For brevity, I'll reference today.ts functions
@@ -54,28 +54,43 @@ function getMoonPhaseName(phaseValue: number): string {
  * Check if Mercury is retrograde
  */
 function isMercuryRetrograde(jd: number): boolean {
-  const mercury1 = planetposition.mercury(jd - 1);
-  const mercury2 = planetposition.mercury(jd);
-  const mercury3 = planetposition.mercury(jd + 1);
+  const mercury = new planetposition.Planet(data.vsop87Bearth, 'mercury');
   
-  // Check if longitude decreases (backward motion)
-  const lon1 = normalizeAngle(mercury1.lon);
-  const lon2 = normalizeAngle(mercury2.lon);
-  const lon3 = normalizeAngle(mercury3.lon);
+  // Get positions for yesterday, today, and tomorrow
+  const posYesterday = mercury.position(jd - 1);
+  const posToday = mercury.position(jd);
+  const posTomorrow = mercury.position(jd + 1);
   
-  // Retrograde if longitude decreases
-  return (lon2 < lon1 && lon3 < lon2) || (lon2 > lon1 && lon3 < lon2 && Math.abs(lon3 - lon1) > 180);
+  // Calculate the change in longitude
+  const changeYesterdayToToday = normalizeAngle(posToday.lon) - normalizeAngle(posYesterday.lon);
+  const changeTodayToTomorrow = normalizeAngle(posTomorrow.lon) - normalizeAngle(posToday.lon);
+  
+  // Handle wraparound at 360/0 degrees
+  let delta1 = changeYesterdayToToday;
+  if (delta1 > 180) delta1 -= 360;
+  if (delta1 < -180) delta1 += 360;
+  
+  let delta2 = changeTodayToTomorrow;
+  if (delta2 > 180) delta2 -= 360;
+  if (delta2 < -180) delta2 += 360;
+  
+  // If both changes are negative, Mercury is retrograde
+  return delta1 < 0 && delta2 < 0;
 }
 
 /**
  * Check if Jupiter and Mars are conjunct (within 10 degrees)
  */
 function isJupiterMarsConjunction(jd: number): boolean {
-  const jupiter = planetposition.jupiter(jd);
-  const mars = planetposition.mars(jd);
+  const jupiter = new planetposition.Planet(data.vsop87Bearth, 'jupiter');
+  const mars = new planetposition.Planet(data.vsop87Bearth, 'mars');
   
-  const jupiterLon = normalizeAngle(jupiter.lon);
-  const marsLon = normalizeAngle(mars.lon);
+  const jupiterPos = jupiter.position(jd);
+  const marsPos = mars.position(jd);
+  
+  // Calculate angular distance between the two planets
+  const jupiterLon = normalizeAngle(jupiterPos.lon);
+  const marsLon = normalizeAngle(marsPos.lon);
   
   const angularDistance = Math.abs(jupiterLon - marsLon);
   const minDistance = Math.min(angularDistance, 360 - angularDistance);

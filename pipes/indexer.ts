@@ -150,7 +150,7 @@ async function main() {
   console.log(`   Block range: ${startBlock || 'latest'} - ${endBlock || 'latest'}`);
   
   // Build the query using EvmQueryBuilder
-  const query = new EvmQueryBuilder()
+  const queryBuilder = new EvmQueryBuilder()
     // Add block and transaction fields we need
     .addFields({
       block: {
@@ -160,23 +160,28 @@ async function main() {
       transaction: {
         hash: true,
       },
-    })
-    // Add the Swap event log
-    .addLog({
-      request: {
-        address: [WETH_USDC_PAIR],
-        topic0: [SWAP_EVENT_TOPIC],
-      },
-      // Add block range if specified
-      ...(startBlock !== undefined && endBlock !== undefined
-        ? {
-            range: {
-              from: startBlock,
-              to: endBlock,
-            },
-          }
-        : {}),
     });
+  
+  // Add the Swap event log request with optional range
+  const logRequest: any = {
+    request: {
+      address: [WETH_USDC_PAIR],
+      topic0: [SWAP_EVENT_TOPIC],
+    },
+  };
+  
+  // Add block range if specified
+  if (startBlock !== undefined && endBlock !== undefined) {
+    logRequest.range = {
+      from: startBlock,
+      to: endBlock,
+    };
+  } else {
+    // Provide default range when not specified (required by type)
+    logRequest.range = { from: 0 };
+  }
+  
+  const query = queryBuilder.addLog(logRequest);
   
   // Create the portal source - pass the query builder directly (no .build() needed)
   const source = createEvmPortalSource({
@@ -187,91 +192,103 @@ async function main() {
   console.log('📡 Processing Swap events...');
   let processedCount = 0;
   
-  // Iterate over the source - according to docs, we destructure {data} from each item
+  // Iterate over the source - data structure is { blocks: Block[] }
   for await (const { data } of source) {
-    // The data structure contains log, block, and transaction
-    const log = data?.log;
-    const block = data?.block;
-    const tx = data?.transaction;
+    // The data structure contains an array of blocks
+    if (!data?.blocks || !Array.isArray(data.blocks)) continue;
     
-    // Skip if this doesn't look like a log entry
-    if (!log || !log.topics) continue;
+    // Iterate through each block
+    for (const block of data.blocks) {
+      // Each block contains logs array
+      if (!block.logs || !Array.isArray(block.logs)) continue;
+      
+      // Iterate through logs in this block
+      for (const log of block.logs) {
+        // Skip if this doesn't look like a log entry (logs are typed as {}[], so we need to check properties)
+        if (!log || typeof log !== 'object') continue;
+        const logObj = log as any;
+        if (!logObj.topics || !Array.isArray(logObj.topics)) continue;
+        
+        // Verify this is a Swap event
+        if (logObj.topics[0] !== SWAP_EVENT_TOPIC) continue;
     
-    // Verify this is a Swap event
-    if (log.topics[0] !== SWAP_EVENT_TOPIC) continue;
-    
-    // Extract amounts from event data
-    // The data field should contain the event parameters (amount0In, amount1In, amount0Out, amount1Out)
-    const eventData = log.data || '';
-    
-    // Validate data length (should be 256 hex chars + '0x' = 258 total)
-    if (!eventData || eventData.length < 258) {
-      console.warn('⚠️  Skipping log with invalid data:', log);
-      continue;
-    }
-    
-    const { amount0In, amount1In, amount0Out, amount1Out } = extractAmounts(eventData);
-    
-    // Calculate price (assuming token0 is WETH and token1 is USDC)
-    // Note: In Uniswap V2, token0/token1 order depends on the pair creation
-    // For WETH/USDC, typically WETH is token0 and USDC is token1
-    const price = calculatePrice(
-      amount0In,
-      amount1In,
-      amount0Out,
-      amount1Out,
-      WETH_DECIMALS,
-      USDC_DECIMALS
-    );
-    
-    // Calculate volume
-    const volume = calculateVolume(
-      amount0In,
-      amount0Out,
-      WETH_DECIMALS,
-      price
-    );
-    
-    // Store the data
-    // Handle different block number formats (could be number, string, or bigint)
-    const blockNumber = typeof block?.number === 'number' 
-      ? block.number 
-      : typeof block?.number === 'string'
-      ? parseInt(block.number, 10)
-      : typeof block?.number === 'bigint'
-      ? Number(block.number)
-      : 0;
-    
-    // Extract timestamp from block (timestamp is in seconds)
-    const timestamp = typeof block?.timestamp === 'number'
-      ? block.timestamp
-      : typeof block?.timestamp === 'string'
-      ? parseInt(block.timestamp, 10)
-      : typeof block?.timestamp === 'bigint'
-      ? Number(block.timestamp)
-      : 0;
-    
-    // Convert timestamp to ISO date string (YYYY-MM-DD)
-    const date = timestamp > 0 
-      ? new Date(timestamp * 1000).toISOString().split('T')[0]
-      : '';
-    
-    const txHash = tx?.hash || log.transactionHash || '';
-    
-    swapData.push({
-      block: blockNumber,
-      timestamp: timestamp,
-      date: date,
-      txHash: txHash,
-      price: price.toFixed(2),
-      volume: volume.toFixed(2),
-    });
-    
-    processedCount++;
-    
-    // Log progress every 100 swaps
-    if (processedCount % 100 === 0) {
-      console.log(`   Processed ${processedCount} swaps...`);
+        // Extract amounts from event data
+        // The data field should contain the event parameters (amount0In, amount1In, amount0Out, amount1Out)
+        const eventData = logObj.data || '';
+        
+        // Validate data length (should be 256 hex chars + '0x' = 258 total)
+        if (!eventData || eventData.length < 258) {
+          console.warn('⚠️  Skipping log with invalid data:', log);
+          continue;
+        }
+        
+        const { amount0In, amount1In, amount0Out, amount1Out } = extractAmounts(eventData);
+        
+        // Calculate price (assuming token0 is WETH and token1 is USDC)
+        // Note: In Uniswap V2, token0/token1 order depends on the pair creation
+        // For WETH/USDC, typically WETH is token0 and USDC is token1
+        const price = calculatePrice(
+          amount0In,
+          amount1In,
+          amount0Out,
+          amount1Out,
+          WETH_DECIMALS,
+          USDC_DECIMALS
+        );
+        
+        // Calculate volume
+        const volume = calculateVolume(
+          amount0In,
+          amount0Out,
+          WETH_DECIMALS,
+          price
+        );
+        
+        // Store the data
+        // Block structure uses header.number and header.timestamp
+        const blockNumber = typeof block?.header?.number === 'number' 
+          ? block.header.number 
+          : typeof block?.header?.number === 'string'
+          ? parseInt(block.header.number, 10)
+          : typeof block?.header?.number === 'bigint'
+          ? Number(block.header.number)
+          : 0;
+        
+        // Extract timestamp from block header (timestamp is in seconds)
+        const timestamp = typeof block?.header?.timestamp === 'number'
+          ? block.header.timestamp
+          : typeof block?.header?.timestamp === 'string'
+          ? parseInt(block.header.timestamp, 10)
+          : typeof block?.header?.timestamp === 'bigint'
+          ? Number(block.header.timestamp)
+          : 0;
+        
+        // Convert timestamp to ISO date string (YYYY-MM-DD)
+        const date = timestamp > 0 
+          ? new Date(timestamp * 1000).toISOString().split('T')[0]
+          : '';
+        
+        // Get transaction hash from log or block transactions
+        const txHash = logObj.transactionHash || 
+          (block.transactions && Array.isArray(block.transactions) && block.transactions[0]?.hash) || 
+          '';
+        
+        swapData.push({
+          block: blockNumber,
+          timestamp: timestamp,
+          date: date,
+          txHash: txHash,
+          price: price.toFixed(2),
+          volume: volume.toFixed(2),
+        });
+        
+        processedCount++;
+        
+        // Log progress every 100 swaps
+        if (processedCount % 100 === 0) {
+          console.log(`   Processed ${processedCount} swaps...`);
+        }
+      }
     }
   }
   
