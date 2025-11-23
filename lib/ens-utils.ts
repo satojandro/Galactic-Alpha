@@ -165,6 +165,9 @@ async function mintSubnameViaContract({
     throw new Error('No account found.')
   }
 
+  // Get the correct chain object for this operation
+  const chain = getEnsChain(chainId)
+
   // Call the contract's mintSubname function
   const txHash = await walletClient.writeContract({
     address: contractAddress,
@@ -172,7 +175,7 @@ async function mintSubnameViaContract({
     functionName: 'mintSubname',
     args: [subname],
     account: accounts[0],
-    chain: walletClient.chain || undefined,
+    chain: chain, // Use the correct chain from getEnsChain(chainId)
   })
 
   return txHash
