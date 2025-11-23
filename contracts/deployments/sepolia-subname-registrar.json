@@ -1,0 +1,9 @@
+{
+  "network": "sepolia",
+  "contractAddress": "0x6544F8CaD4fcA7472cB9B5128e1f7A6D11e60825",
+  "deployer": "0x339A311407fE71D1D7810ba41Cfe841fC179b3fd",
+  "nameWrapper": "0x0635513f179D50A207757E05759CbD106d7dFcE8",
+  "parentDomain": "galacticalpha.eth",
+  "parentNode": "0x7ae7f50971bf70afa0f22307b4520bf4ecb32f056840092218a3571c584ce2f6",
+  "timestamp": "2025-11-23T09:10:49.179Z"
+}
