@@ -1,6 +1,7 @@
 import { CosmicBackground } from "@/components/cosmic-background"
 import { TarotCorners } from "@/components/tarot-corners"
 import { VaultGrid } from "@/components/vault-grid"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import Link from "next/link"
 
 export default function VaultsPage() {
@@ -29,9 +30,12 @@ export default function VaultsPage() {
               Mint Identity
             </Link>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-            <span>Live Astrological Data</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+              <span>Live Astrological Data</span>
+            </div>
+            <ConnectButton />
           </div>
         </div>
 

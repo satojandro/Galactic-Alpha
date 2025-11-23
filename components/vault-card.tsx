@@ -4,6 +4,11 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { useVault } from "@/hooks/useVault"
+import { VaultDialog } from "@/components/vault-dialog"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Lock, Unlock, Loader2 } from "lucide-react"
+import { formatEther } from "viem"
 
 interface VaultCardProps {
   vault: {
@@ -16,6 +21,7 @@ interface VaultCardProps {
     color: string
     description: string
     riskLevel: string
+    address?: `0x${string}` // Optional contract address
   }
   index: number
 }
@@ -76,8 +82,16 @@ const riskColors = {
 
 export function VaultCard({ vault, index }: VaultCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false)
+  const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false)
+  
   const theme = colorThemes[vault.color as keyof typeof colorThemes]
   const riskColor = riskColors[vault.riskLevel as keyof typeof riskColors]
+  
+  // Only use vault hook if address is provided
+  const vaultData = vault.address ? useVault(vault.address) : null
+  const isVaultOpen = vaultData?.vaultOpen ?? true // Default to open if no contract
+  const displayTVL = vaultData ? `${parseFloat(vaultData.tvl).toFixed(2)} ETH` : vault.tvl
 
   return (
     <Card
@@ -132,29 +146,81 @@ export function VaultCard({ vault, index }: VaultCardProps) {
           </div>
           <div>
             <div className="text-xs text-muted-foreground mb-1">TVL</div>
-            <div className="text-2xl font-bold text-foreground">{vault.tvl}</div>
+            <div className="text-2xl font-bold text-foreground">{displayTVL}</div>
           </div>
         </div>
 
         {/* Activation condition */}
         <div className="space-y-2">
           <div className="text-xs text-muted-foreground">Activation Condition</div>
-          <div className={`text-sm font-medium ${theme.text} flex items-center gap-2`}>
-            <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-            {vault.condition}
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className={`text-sm font-medium ${theme.text} flex items-center gap-2 cursor-help`}>
+                  {isVaultOpen ? (
+                    <Unlock className="w-4 h-4 text-green-400" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-red-400" />
+                  )}
+                  <span>{vault.condition}</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{isVaultOpen ? "Vault is open ✨" : "Vault is closed due to cosmic misalignment ☿"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* Action buttons */}
         <div className="flex gap-2">
-          <Button className={`flex-1 bg-gradient-to-r ${theme.bg} ${theme.border} border hover:opacity-80`}>
-            Deposit
+          <Button
+            className={`flex-1 bg-gradient-to-r ${theme.bg} ${theme.border} border hover:opacity-80`}
+            disabled={!isVaultOpen || (vaultData?.isPending ?? false)}
+            onClick={() => vault.address && setDepositDialogOpen(true)}
+          >
+            {vaultData?.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Deposit"
+            )}
           </Button>
-          <Button variant="outline" size="icon" className={theme.border}>
+          <Button
+            variant="outline"
+            size="icon"
+            className={theme.border}
+            disabled={!isVaultOpen || (vaultData?.isPending ?? false)}
+            onClick={() => vault.address && setWithdrawDialogOpen(true)}
+          >
             <span className="text-lg">{vault.symbol}</span>
           </Button>
         </div>
       </div>
+
+      {/* Dialogs */}
+      {vault.address && (
+        <>
+          <VaultDialog
+            vaultAddress={vault.address}
+            vaultName={vault.name}
+            vaultSymbol={vault.symbol}
+            isOpen={depositDialogOpen}
+            onClose={() => setDepositDialogOpen(false)}
+            mode="deposit"
+          />
+          <VaultDialog
+            vaultAddress={vault.address}
+            vaultName={vault.name}
+            vaultSymbol={vault.symbol}
+            isOpen={withdrawDialogOpen}
+            onClose={() => setWithdrawDialogOpen(false)}
+            mode="withdraw"
+          />
+        </>
+      )}
     </Card>
   )
 }

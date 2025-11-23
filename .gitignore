@@ -81,6 +81,9 @@ temp/
 swap_data.json
 astro_today_index.json
 
+# Vault configuration (contains contract addresses)
+lib/vault-config.ts
+
 # TypeScript
 next-env.d.ts
 

@@ -17,7 +17,7 @@ cd astro && npm install && cd ..
 cd backtester && npm install && cd ..
 
 # Install Frontend dependencies
-cd galactic-alpha && npm install && cd ..
+npm install
 ```
 
 ## Module Dependencies
@@ -51,7 +51,7 @@ cd galactic-alpha && npm install && cd ..
 
 *Note: This module has no runtime dependencies - it only uses Node.js built-ins.*
 
-### 🎨 Frontend Module (`galactic-alpha/`)
+### 🎨 Frontend Module (root directory)
 
 **Core Dependencies:**
 
