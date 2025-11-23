@@ -248,7 +248,7 @@ export async function getParentOwner(chainId: number): Promise<Address | null> {
     const chain = getEnsChain(chainId)
     const publicClient = createPublicClient({
       chain: addEnsContracts(chain),
-      transport: http(),
+      transport: http('https://lb.drpc.live/sepolia/Au_X8MHT5km3gTHdk3Zh9IDSHlrSyFwR8JVUQmlfqV1j'),
     })
 
     // Use ENS.js public actions to get the owner
@@ -365,7 +365,7 @@ export async function isSubnameAvailable(
       const chain = getEnsChain(chainId)
       const publicClient = createPublicClient({
         chain: addEnsContracts(chain),
-        transport: http(),
+        transport: http('https://lb.drpc.live/sepolia/Au_X8MHT5km3gTHdk3Zh9IDSHlrSyFwR8JVUQmlfqV1j'),
       })
 
       const isMinted = await publicClient.readContract({
