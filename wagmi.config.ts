@@ -1,5 +1,5 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
-import { defineChain } from 'viem/chains'
+import { defineChain } from 'viem'
 
 // Zircuit Mainnet configuration
 const zircuitMainnet = defineChain({

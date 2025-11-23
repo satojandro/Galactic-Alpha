@@ -2,7 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Orbitron } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { Web3Providers } from "@/components/web3-providers"
 import "./globals.css"
 
 const orbitron = Orbitron({
@@ -41,9 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${orbitron.className} antialiased`}>
-        <Web3Providers>
-          {children}
-        </Web3Providers>
+        {children}
         <Analytics />
       </body>
     </html>

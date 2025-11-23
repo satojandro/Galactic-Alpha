@@ -1,16 +1,5 @@
 import { VaultCard } from "./vault-card"
 
-// Try to import vault config if it exists (optional)
-let vaultAddresses: Record<string, `0x${string}`> = {}
-try {
-  // Dynamic import to handle missing file gracefully
-  const configModule = require("@/lib/vault-config")
-  vaultAddresses = configModule.VAULT_CONFIG || {}
-} catch (error) {
-  // Config file doesn't exist yet - that's okay, vaults will work without addresses
-  // This is expected and not an error
-}
-
 const vaults = [
   {
     id: "mercury-retrograde",
@@ -84,14 +73,7 @@ export function VaultGrid() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {vaults.map((vault, index) => (
-        <VaultCard
-          key={vault.id}
-          vault={{
-            ...vault,
-            address: vaultAddresses[vault.id], // Add contract address if configured
-          }}
-          index={index}
-        />
+        <VaultCard key={vault.id} vault={vault} index={index} />
       ))}
     </div>
   )
