@@ -1,0 +1,20 @@
+{
+  "name": "galactic-alpha-pipes",
+  "version": "1.0.0",
+  "description": "SQD Pipes indexer for Uniswap V2 Swap events",
+  "main": "indexer.ts",
+  "scripts": {
+    "index": "tsx indexer.ts",
+    "dev": "tsx watch indexer.ts"
+  },
+  "dependencies": {
+    "@subsquid/pipes": "^0.1.0",
+    "@subsquid/evm-processor": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4.7.0",
+    "typescript": "^5"
+  }
+}
+
