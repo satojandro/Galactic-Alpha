@@ -8,7 +8,7 @@
     "dev": "tsx watch indexer.ts"
   },
   "dependencies": {
-    "@sqd-pipes/pipes": "^0.1.0"
+    "@sqd-pipes/pipes": "^0.0.1-alpha.38"
   },
   "devDependencies": {
     "@types/node": "^22",

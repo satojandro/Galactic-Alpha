@@ -205,52 +205,51 @@ async function main() {
     }
     
     const { amount0In, amount1In, amount0Out, amount1Out } = extractAmounts(eventData);
-      
-      // Calculate price (assuming token0 is WETH and token1 is USDC)
-      // Note: In Uniswap V2, token0/token1 order depends on the pair creation
-      // For WETH/USDC, typically WETH is token0 and USDC is token1
-      const price = calculatePrice(
-        amount0In,
-        amount1In,
-        amount0Out,
-        amount1Out,
-        WETH_DECIMALS,
-        USDC_DECIMALS
-      );
-      
-      // Calculate volume
-      const volume = calculateVolume(
-        amount0In,
-        amount0Out,
-        WETH_DECIMALS,
-        price
-      );
-      
-      // Store the data
-      // Handle different block number formats (could be number, string, or bigint)
-      const blockNumber = typeof block?.number === 'number' 
-        ? block.number 
-        : typeof block?.number === 'string'
-        ? parseInt(block.number, 10)
-        : typeof block?.number === 'bigint'
-        ? Number(block.number)
-        : 0;
-      
-      const txHash = tx?.hash || log.transactionHash || '';
-      
-      swapData.push({
-        block: blockNumber,
-        txHash: txHash,
-        price: price.toFixed(2),
-        volume: volume.toFixed(2),
-      });
-      
-      processedCount++;
-      
-      // Log progress every 100 swaps
-      if (processedCount % 100 === 0) {
-        console.log(`   Processed ${processedCount} swaps...`);
-      }
+    
+    // Calculate price (assuming token0 is WETH and token1 is USDC)
+    // Note: In Uniswap V2, token0/token1 order depends on the pair creation
+    // For WETH/USDC, typically WETH is token0 and USDC is token1
+    const price = calculatePrice(
+      amount0In,
+      amount1In,
+      amount0Out,
+      amount1Out,
+      WETH_DECIMALS,
+      USDC_DECIMALS
+    );
+    
+    // Calculate volume
+    const volume = calculateVolume(
+      amount0In,
+      amount0Out,
+      WETH_DECIMALS,
+      price
+    );
+    
+    // Store the data
+    // Handle different block number formats (could be number, string, or bigint)
+    const blockNumber = typeof block?.number === 'number' 
+      ? block.number 
+      : typeof block?.number === 'string'
+      ? parseInt(block.number, 10)
+      : typeof block?.number === 'bigint'
+      ? Number(block.number)
+      : 0;
+    
+    const txHash = tx?.hash || log.transactionHash || '';
+    
+    swapData.push({
+      block: blockNumber,
+      txHash: txHash,
+      price: price.toFixed(2),
+      volume: volume.toFixed(2),
+    });
+    
+    processedCount++;
+    
+    // Log progress every 100 swaps
+    if (processedCount % 100 === 0) {
+      console.log(`   Processed ${processedCount} swaps...`);
     }
   }
   
