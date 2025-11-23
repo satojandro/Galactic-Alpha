@@ -1,6 +1,7 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit'
 import { defineChain } from 'viem'
 import { mainnet, sepolia } from 'viem/chains'
+import { injected, walletConnect } from 'wagmi/connectors'
 
 // 🚨 TEMPORARY FIX: Hardcoded working RPC URL
 const SEPOLIA_RPC_URL = 'https://lb.drpc.live/sepolia/Au_X8MHT5km3gTHdk3Zh9IDSHlrSyFwR8JVUQmlfqV1j'
@@ -59,11 +60,26 @@ const zircuitTestnetConfig = defineChain({
   },
 })
 
-// 🚨 TEMPORARY: Focus on Sepolia for ENS minting - Zircuit chains removed
+// Explicit connector configuration for MetaMask + WalletConnect support
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID'
+
 export const config = getDefaultConfig({
   appName: 'Galactic Alpha',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
+  projectId,
   chains: [sepoliaWithRPC, mainnet], // Sepolia first for ENS minting
   ssr: true, // Enable SSR support for Next.js
+  // Explicitly include MetaMask and WalletConnect
+  connectors: [
+    injected(), // Enables MetaMask and other browser wallets
+    walletConnect({
+      projectId,
+      metadata: {
+        name: "Galactic Alpha",
+        description: "Cosmic Yield and Identity Protocol",
+        url: "https://galacticalpha.xyz",
+        icons: ["https://galacticalpha.xyz/icon.svg"],
+      },
+    }),
+  ],
 })
 
