@@ -1,0 +1,19 @@
+{
+  "name": "galactic-alpha-astro",
+  "version": "1.0.0",
+  "description": "Astrological conditions engine for Galactic Alpha",
+  "main": "today.ts",
+  "scripts": {
+    "today": "tsx today.ts",
+    "dev": "tsx watch today.ts"
+  },
+  "dependencies": {
+    "astronomia": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4.7.0",
+    "typescript": "^5"
+  }
+}
+

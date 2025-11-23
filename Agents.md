@@ -19,10 +19,22 @@ You are in charge of implementing, testing, and integrating the following featur
 - Updated to use correct Pipes SDK API pattern from official documentation
 - Ready for testing and integration with backtesting system
 
+**Phase 2: Astrological Conditions Engine - COMPLETED ✅**
+- Created `astro/` directory structure with `package.json` and `tsconfig.json`
+- Installed `astronomia` library for astronomical calculations
+- Implemented `astro/today.ts` script that calculates:
+  - Moon phase (8 phases: New Moon, Waxing Crescent, First Quarter, Waxing Gibbous, Full Moon, Waning Gibbous, Last Quarter, Waning Crescent)
+  - Mercury retrograde status (detects backward planetary motion)
+  - Jupiter-Mars conjunction (checks if planets are within 10 degrees)
+  - Astro rating (narrative tags like "Chaotic Neutral 🌕", "Amplified Forces 🪐", etc.)
+- Outputs to `astro_today_index.json` in the required format
+- Includes comprehensive README with usage instructions and astro rating examples
+- Successfully tested and verified output format
+
 **Next Steps:**
-- Test the indexer: `cd pipes && npm install && npx tsx indexer.ts`
-- Integrate output with backtesting visualizer
-- Begin Phase 2: Astro Integration
+- Begin Phase 3: Backtesting Joiner (`backtester/joinAstro.ts`)
+- Merge SQD swap data with astro timeline
+- Create sentiment-weighted timeline output
 
 ---
 
@@ -35,13 +47,13 @@ You are in charge of implementing, testing, and integrating the following featur
 - [x] Store output as JSON or expose as endpoint *(Outputs to `swap_data.json`)*
 - [ ] Confirm SQD integration is working for backtesting *(Ready for testing - run `npm install && npx tsx indexer.ts` in `pipes/` directory)*
 
-### 2. Astro Integration (Parallel)
-- [ ] Install `astronomia` (`npm install astronomia`)
-- [ ] Create `astro/today.ts` that calculates:
-  - Current moon phase
-  - Retrograde state (Mercury)
-  - Jupiter/Mars aspects (optional)
-- [ ] Output to `astro_today_index.json` (see mock)
+### 2. Astro Integration - COMPLETED ✅
+- [x] Install `astronomia` (`npm install astronomia`) *(Installed and configured)*
+- [x] Create `astro/today.ts` that calculates:
+  - Current moon phase *(8 phases calculated from moon/sun positions)*
+  - Retrograde state (Mercury) *(Detects backward motion by comparing positions over 3 days)*
+  - Jupiter/Mars aspects *(Checks conjunction within 10 degrees)*
+- [x] Output to `astro_today_index.json` *(Successfully outputs JSON with date, moon_phase, mercury_retrograde, jupiter_mars_conjunction, astro_rating)*
 
 ### 3. Backtesting Joiner
 - [ ] Create `backtester/joinAstro.ts`
