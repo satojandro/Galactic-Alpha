@@ -15,7 +15,7 @@ const { ethers } = require('ethers')
 // Configuration
 const CONTRACT_ADDRESS = '0x6544F8CaD4fcA7472cB9B5128e1f7A6D11e60825' // Your deployed contract
 const NAME_WRAPPER_ADDRESS = '0x0635513f179D50A207757E05759CbD106d7dFcE8' // Sepolia NameWrapper
-const RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com'
+const RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://rpc2.sepolia.org'
 const CHAIN_ID = 11155111 // Sepolia
 
 // NameWrapper ABI (just the setApprovalForAll function)
