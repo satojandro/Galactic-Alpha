@@ -199,7 +199,11 @@ async function mintSubnameDirect({
   walletClient: ReturnType<typeof createWalletClient>
   accounts: readonly `0x${string}`[]
 }): Promise<`0x${string}`> {
-  const extendedWalletClient = walletClient.extend(ensWalletActions)
+  // Create a new wallet client with ENS contracts for direct minting
+  const ensWalletClient = createWalletClient({
+    chain: addEnsContracts(getEnsChain(chainId)),
+    transport: custom(window.ethereum!),
+  }).extend(ensWalletActions) as any
 
   try {
     // Mint the subname using ENS.js
@@ -207,6 +211,7 @@ async function mintSubnameDirect({
       name: fullSubname,
       owner: userAddress,
       contract: 'nameWrapper',
+      account: accounts[0], // Required account parameter
     })
 
     return txHash
@@ -301,7 +306,7 @@ export async function approveSubnameOperator({
   const walletClient = createWalletClient({
     chain: addEnsContracts(chain),
     transport: custom(window.ethereum),
-  }).extend(ensWalletActions)
+  }).extend(ensWalletActions) as any
 
   const accounts = await walletClient.getAddresses()
   if (!accounts || accounts.length === 0) {
@@ -329,7 +334,7 @@ export async function approveSubnameOperator({
     ] as const
 
     // Call setApprovalForAll directly on the NameWrapper contract
-    const txHash = await walletClient.writeContract({
+    const txHash = await (walletClient as any).writeContract({
       address: nameWrapperAddress,
       abi: nameWrapperAbi,
       functionName: 'setApprovalForAll',
