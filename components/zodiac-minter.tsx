@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useAccount, useChainId } from "wagmi"
+import { useAccount, useChainId, useSwitchChain } from "wagmi"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { toast } from "sonner"
@@ -51,6 +51,7 @@ const mysticQuotes = [
 export function ZodiacMinter() {
   const { address, isConnected } = useAccount()
   const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
   const [isSpinning, setIsSpinning] = useState(false)
   const [revealed, setRevealed] = useState(false)
   const [isMinting, setIsMinting] = useState(false)
@@ -84,6 +85,10 @@ export function ZodiacMinter() {
   }
 
   const handleMint = async () => {
+    console.log('🎯 Starting ENS mint process...')
+    console.log('📍 Current chainId:', chainId)
+    console.log('👤 User address:', address)
+
     if (!isConnected || !address) {
       toast.error("Please connect your wallet first", {
         description: "You need to connect your wallet to mint your stellar identity.",
@@ -91,12 +96,27 @@ export function ZodiacMinter() {
       return
     }
 
-    // Check if we're on a supported chain (Ethereum Mainnet or Sepolia)
-    if (chainId !== 1 && chainId !== 11155111) {
-      toast.error("Unsupported network", {
-        description: `Please switch to Ethereum Mainnet or Sepolia to mint ENS subnames. Current chain: ${chainId}`,
+    // Check if we're on Sepolia (11155111) - ENS minting works best on Sepolia
+    if (chainId !== 11155111) {
+      toast.loading("Switching to Sepolia...", {
+        description: "ENS minting requires Sepolia testnet. Switching networks...",
       })
-      return
+
+      try {
+        await switchChain({ chainId: 11155111 }) // Sepolia
+
+        // Wait a moment for the switch to complete
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
+        toast.success("Switched to Sepolia!", {
+          description: "Now ready to mint your stellar identity.",
+        })
+      } catch (error) {
+        toast.error("Failed to switch network", {
+          description: "Please manually switch to Sepolia in your wallet and try again.",
+        })
+        return
+      }
     }
 
     if (!subnameLabel) {

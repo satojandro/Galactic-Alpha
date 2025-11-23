@@ -59,10 +59,11 @@ const zircuitTestnetConfig = defineChain({
   },
 })
 
+// 🚨 TEMPORARY: Focus on Sepolia for ENS minting - Zircuit chains removed
 export const config = getDefaultConfig({
   appName: 'Galactic Alpha',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
-  chains: [mainnet, sepoliaWithRPC, zircuitMainnet, zircuitTestnetConfig],
+  chains: [sepoliaWithRPC, mainnet], // Sepolia first for ENS minting
   ssr: true, // Enable SSR support for Next.js
 })
 
