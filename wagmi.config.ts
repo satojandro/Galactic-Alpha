@@ -3,7 +3,7 @@ import { defineChain } from 'viem'
 import { mainnet, sepolia } from 'viem/chains'
 
 // 🚨 TEMPORARY FIX: Hardcoded working RPC URL
-const SEPOLIA_RPC_URL = 'https://rpc2.sepolia.org'
+const SEPOLIA_RPC_URL = 'https://lb.drpc.live/sepolia/Au_X8MHT5km3gTHdk3Zh9IDSHlrSyFwR8JVUQmlfqV1j'
 console.log('🔍 Using Sepolia RPC:', SEPOLIA_RPC_URL)
 
 const sepoliaWithRPC = defineChain({

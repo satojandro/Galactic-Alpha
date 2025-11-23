@@ -175,6 +175,8 @@ If you get a `HeadersTimeoutError`, the RPC endpoint is slow. Try these solution
 
 2. **Try alternative public RPCs**:
    ```env
+   SEPOLIA_RPC_URL=https://lb.drpc.live/sepolia/Au_X8MHT5km3gTHdk3Zh9IDSHlrSyFwR8JVUQmlfqV1j
+   # OR
    SEPOLIA_RPC_URL=https://rpc2.sepolia.org
    # OR
    SEPOLIA_RPC_URL=https://sepolia.gateway.tenderly.co
