@@ -15,6 +15,8 @@ This module uses the Subsquid Pipes SDK to:
    ```bash
    npm install
    ```
+   
+   This will install `@sqd-pipes/pipes` - the official Subsquid Pipes SDK package.
 
 2. **Run the indexer:**
    ```bash

@@ -8,8 +8,7 @@
     "dev": "tsx watch indexer.ts"
   },
   "dependencies": {
-    "@subsquid/pipes": "^0.1.0",
-    "@subsquid/evm-processor": "^1.0.0"
+    "@sqd-pipes/pipes": "^0.1.0"
   },
   "devDependencies": {
     "@types/node": "^22",

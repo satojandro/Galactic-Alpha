@@ -11,11 +11,12 @@ You are in charge of implementing, testing, and integrating the following featur
 ## 📝 Latest Updates
 
 **Phase 1: SQD Pipes Indexer - COMPLETED ✅**
-- Created `pipes/indexer.ts` using `@subsquid/evm-processor`
-- Implemented Uniswap V2 Swap event listener for WETH/USDC pair
+- Created `pipes/indexer.ts` using `@sqd-pipes/pipes` (official Pipes SDK)
+- Implemented Uniswap V2 Swap event listener for WETH/USDC pair using `EvmQueryBuilder` and `createEvmPortalSource`
 - Extracts block, txHash, price, and volume data
 - Outputs to `swap_data.json` in the required format
 - Includes comprehensive README with usage instructions
+- Updated to use correct Pipes SDK API pattern from official documentation
 - Ready for testing and integration with backtesting system
 
 **Next Steps:**

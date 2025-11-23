@@ -9,7 +9,8 @@
  *   npx tsx indexer.ts
  */
 
-import { EvmBatchProcessor } from '@subsquid/evm-processor';
+// Import Pipes SDK
+import { createEvmPortalSource, EvmQueryBuilder } from '@sqd-pipes/pipes/evm';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -128,42 +129,82 @@ function calculateVolume(
 }
 
 /**
- * Main processor setup
+ * Main function to process Swap events using Pipes SDK
  */
-const processor = new EvmBatchProcessor()
-  .setDataSource({
-    // Use Subsquid's Ethereum archive
-    archive: 'https://eth.archive.subsquid.io',
-  })
-  .addLog({
-    // Filter for specific pair address (WETH/USDC)
-    // You can also use [] to listen to all pairs
-    address: [WETH_USDC_PAIR],
-    // Filter for Swap events
-    topic0: [SWAP_EVENT_TOPIC],
-  })
-  .setBlockRange({
-    // Start from a recent block (adjust as needed)
-    // For testing, use a small recent range
-    from: process.env.START_BLOCK ? parseInt(process.env.START_BLOCK) : undefined,
-    to: process.env.END_BLOCK ? parseInt(process.env.END_BLOCK) : undefined,
-  });
-
-/**
- * Process blocks and extract swap data
- */
-processor.run(async (ctx) => {
+async function main() {
   const swapData: SwapData[] = [];
   
-  console.log(`Processing ${ctx.blocks.length} blocks...`);
+  // Parse block range from environment variables (optional)
+  const startBlock = process.env.START_BLOCK ? parseInt(process.env.START_BLOCK) : undefined;
+  const endBlock = process.env.END_BLOCK ? parseInt(process.env.END_BLOCK) : undefined;
   
-  for (const block of ctx.blocks) {
-    for (const log of block.logs) {
-      // Verify this is a Swap event
-      if (log.topics[0] !== SWAP_EVENT_TOPIC) continue;
-      
-      // Extract amounts from event data
-      const { amount0In, amount1In, amount0Out, amount1Out } = extractAmounts(log.data);
+  console.log('🔍 Setting up Pipes query...');
+  console.log(`   Pair: ${WETH_USDC_PAIR}`);
+  console.log(`   Block range: ${startBlock || 'latest'} - ${endBlock || 'latest'}`);
+  
+  // Build the query using EvmQueryBuilder
+  // According to Pipes SDK docs, we use addLog with request and range
+  const query = new EvmQueryBuilder()
+    // Add block and transaction fields we need
+    .addFields({
+      block: {
+        number: true,
+        timestamp: true,
+      },
+      transaction: {
+        hash: true,
+      },
+    })
+    // Add the Swap event log with request and optional range
+    .addLog({
+      request: {
+        address: [WETH_USDC_PAIR],
+        topic0: [SWAP_EVENT_TOPIC],
+      },
+      // Add block range if specified
+      ...(startBlock !== undefined || endBlock !== undefined
+        ? {
+            range: {
+              from: startBlock,
+              to: endBlock,
+            },
+          }
+        : {}),
+    });
+  
+  // Create the portal source
+  const source = createEvmPortalSource({
+    portal: 'https://portal.sqd.dev/datasets/ethereum-mainnet',
+    query: query.build(),
+  });
+  
+  console.log('📡 Processing Swap events...');
+  let processedCount = 0;
+  
+  // Iterate over the source - according to docs, we destructure {data} from each item
+  for await (const { data } of source) {
+    // The data structure contains log, block, and transaction
+    const log = data?.log;
+    const block = data?.block;
+    const tx = data?.transaction;
+    
+    // Skip if this doesn't look like a log entry
+    if (!log || !log.topics) continue;
+    
+    // Verify this is a Swap event
+    if (log.topics[0] !== SWAP_EVENT_TOPIC) continue;
+    
+    // Extract amounts from event data
+    // The data field should contain the event parameters (amount0In, amount1In, amount0Out, amount1Out)
+    const eventData = log.data || '';
+    
+    // Validate data length (should be 256 hex chars + '0x' = 258 total)
+    if (!eventData || eventData.length < 258) {
+      console.warn('⚠️  Skipping log with invalid data:', log);
+      continue;
+    }
+    
+    const { amount0In, amount1In, amount0Out, amount1Out } = extractAmounts(eventData);
       
       // Calculate price (assuming token0 is WETH and token1 is USDC)
       // Note: In Uniswap V2, token0/token1 order depends on the pair creation
@@ -186,12 +227,30 @@ processor.run(async (ctx) => {
       );
       
       // Store the data
+      // Handle different block number formats (could be number, string, or bigint)
+      const blockNumber = typeof block?.number === 'number' 
+        ? block.number 
+        : typeof block?.number === 'string'
+        ? parseInt(block.number, 10)
+        : typeof block?.number === 'bigint'
+        ? Number(block.number)
+        : 0;
+      
+      const txHash = tx?.hash || log.transactionHash || '';
+      
       swapData.push({
-        block: block.header.height,
-        txHash: log.transactionHash,
+        block: blockNumber,
+        txHash: txHash,
         price: price.toFixed(2),
         volume: volume.toFixed(2),
       });
+      
+      processedCount++;
+      
+      // Log progress every 100 swaps
+      if (processedCount % 100 === 0) {
+        console.log(`   Processed ${processedCount} swaps...`);
+      }
     }
   }
   
@@ -199,13 +258,19 @@ processor.run(async (ctx) => {
   if (swapData.length > 0) {
     const outputPath = join(process.cwd(), 'swap_data.json');
     writeFileSync(outputPath, JSON.stringify(swapData, null, 2));
-    console.log(`✅ Processed ${swapData.length} swaps`);
+    console.log(`\n✅ Processed ${swapData.length} swaps`);
     console.log(`📁 Output written to: ${outputPath}`);
     console.log(`\nSample output:`);
     console.log(JSON.stringify(swapData.slice(0, 3), null, 2));
   } else {
-    console.log('⚠️  No swap events found in the specified block range');
+    console.log('\n⚠️  No swap events found in the specified block range');
     console.log('💡 Try adjusting START_BLOCK and END_BLOCK environment variables');
   }
+}
+
+// Run the main function
+main().catch((error) => {
+  console.error('❌ Error processing events:', error);
+  process.exit(1);
 });
 
