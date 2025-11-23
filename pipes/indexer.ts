@@ -143,7 +143,6 @@ async function main() {
   console.log(`   Block range: ${startBlock || 'latest'} - ${endBlock || 'latest'}`);
   
   // Build the query using EvmQueryBuilder
-  // According to Pipes SDK docs, we use addLog with request and range
   const query = new EvmQueryBuilder()
     // Add block and transaction fields we need
     .addFields({
@@ -155,14 +154,14 @@ async function main() {
         hash: true,
       },
     })
-    // Add the Swap event log with request and optional range
+    // Add the Swap event log
     .addLog({
       request: {
         address: [WETH_USDC_PAIR],
         topic0: [SWAP_EVENT_TOPIC],
       },
       // Add block range if specified
-      ...(startBlock !== undefined || endBlock !== undefined
+      ...(startBlock !== undefined && endBlock !== undefined
         ? {
             range: {
               from: startBlock,
@@ -172,10 +171,10 @@ async function main() {
         : {}),
     });
   
-  // Create the portal source
+  // Create the portal source - pass the query builder directly (no .build() needed)
   const source = createEvmPortalSource({
     portal: 'https://portal.sqd.dev/datasets/ethereum-mainnet',
-    query: query.build(),
+    query: query,
   });
   
   console.log('📡 Processing Swap events...');
