@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AstroChart } from "@/components/astro-chart"
 import { Separator } from "@/components/ui/separator"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import Link from "next/link"
 
 export default function BacktestingPage() {
@@ -48,10 +49,12 @@ export default function BacktestingPage() {
               Mint Identity
             </Link>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span>Cosmic Data Active</span>
-          </div>
+          {/* Wallet connect button */}
+          <ConnectButton
+            showBalance={false}
+            accountStatus="address"
+            chainStatus="icon"
+          />
         </div>
 
         {/* Header */}

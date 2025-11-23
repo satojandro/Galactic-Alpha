@@ -1,6 +1,9 @@
+"use client"
+
 import { CosmicBackground } from "@/components/cosmic-background"
 import { TarotCorners } from "@/components/tarot-corners"
 import { ZodiacMinter } from "@/components/zodiac-minter"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import Link from "next/link"
 
 export default function MintPage() {
@@ -29,6 +32,12 @@ export default function MintPage() {
               Backtesting
             </Link>
           </div>
+          {/* Wallet connect button */}
+          <ConnectButton
+            showBalance={false}
+            accountStatus="address"
+            chainStatus="icon"
+          />
         </div>
 
         {/* Title Section */}
