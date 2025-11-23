@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { WagmiProvider } from "wagmi"
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit"
 import { config } from "@/wagmi.config"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import "@rainbow-me/rainbowkit/styles.css"
 
 // Create a QueryClient instance for React Query
@@ -39,8 +39,11 @@ export function Web3Providers({ children }: { children: React.ReactNode }) {
   // Get or create the QueryClient instance
   const queryClient = getQueryClient()
 
+  // Memoize the config to prevent recreation
+  const wagmiConfig = useMemo(() => config, [])
+
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={darkTheme({
@@ -50,6 +53,7 @@ export function Web3Providers({ children }: { children: React.ReactNode }) {
             fontStack: "system",
             overlayBlur: "small",
           })}
+          modalSize="compact"
         >
           {children}
         </RainbowKitProvider>
