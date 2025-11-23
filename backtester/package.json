@@ -1,0 +1,16 @@
+{
+  "name": "galactic-alpha-backtester",
+  "version": "1.0.0",
+  "description": "Backtesting joiner for combining swap data with astrological conditions",
+  "main": "joinAstro.ts",
+  "scripts": {
+    "join": "tsx joinAstro.ts",
+    "dev": "tsx watch joinAstro.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "tsx": "^4.7.0",
+    "typescript": "^5"
+  }
+}
+
